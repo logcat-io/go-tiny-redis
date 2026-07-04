@@ -31,7 +31,7 @@ func ReadCommand(r *bufio.Reader) ([]string, error) {
 		return nil, fmt.Errorf("%w: invalid array length %d", ErrProtocol, n)
 	}
 
-	args := make([]string, n)
+	args := make([]string, 0, n)
 	for i := 0; i < n; i++ {
 		s, err := readBulkString(r) // $4\r\n > PING\r\n > $5\r\n > hello\r\n
 		if err != nil {
