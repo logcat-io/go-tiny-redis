@@ -2,18 +2,21 @@ package server
 
 import (
 	"bufio"
+	"errors"
 	"log/slog"
 	"net"
-	"strings"
+	"tinyredis/internal/resp"
+	"tinyredis/internal/store"
 )
 
 type Server struct {
-	addr string
-	log  *slog.Logger
+	addr  string
+	log   *slog.Logger
+	store *store.Store
 }
 
-func New(addr string, log *slog.Logger) *Server {
-	return &Server{addr: addr, log: log}
+func New(addr string, st *store.Store, log *slog.Logger) *Server {
+	return &Server{addr: addr, store: st, log: log}
 }
 
 func (s *Server) ListenAndServe() error {
@@ -40,18 +43,23 @@ func (s *Server) handleConn(conn net.Conn) {
 			s.log.Warn("failed to close connection", "err", err)
 		}
 	}(conn)
-	r := bufio.NewReader(conn)
-	w := bufio.NewWriter(conn)
+	s.serveLoop(bufio.NewReader(conn), bufio.NewWriter(conn))
+}
 
+func (s *Server) serveLoop(reader *bufio.Reader, writer *bufio.Writer) {
 	for {
-		line, err := r.ReadString('\n')
+		args, err := resp.ReadCommand(reader)
 		if err != nil {
+			if errors.Is(err, resp.ErrProtocol) {
+				_ = resp.WriteError(writer, "ERR protocol error")
+				_ = writer.Flush()
+			}
 			return
 		}
-		if _, err := w.WriteString(strings.ToUpper(line)); err != nil {
+		if err := s.dispatch(writer, args); err != nil {
 			return
 		}
-		if err := w.Flush(); err != nil {
+		if err := writer.Flush(); err != nil {
 			return
 		}
 	}

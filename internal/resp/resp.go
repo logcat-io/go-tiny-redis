@@ -20,6 +20,7 @@ var ErrProtocol = errors.New("resp: protocol error")
 //	*2\r\n$4\r\nPING\r\n$5\r\nhello\r\n  →  []string{"PING", "hello"}
 func ReadCommand(r *bufio.Reader) ([]string, error) {
 	line, err := readLine(r) // *2\r\n
+
 	if err != nil {
 		return nil, err
 	}
