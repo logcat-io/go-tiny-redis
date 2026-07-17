@@ -1,9 +1,11 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log/slog"
 	"os"
+	"time"
 	"tinyredis/internal/server"
 	"tinyredis/internal/store"
 )
@@ -20,4 +22,7 @@ func main() {
 		logger.Error("server exited", "err", err)
 		os.Exit(1)
 	}
+
+	ctx := context.Background()
+	go st.RunSweeper(ctx, time.Second)
 }
