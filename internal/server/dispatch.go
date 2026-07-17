@@ -65,6 +65,16 @@ func (s *Server) dispatch(w *bufio.Writer, args []string) error {
 		default:
 			return resp.WriteInteger(w, int64(math.Ceil(remaining.Seconds())))
 		}
+	case "SAVE":
+		if s.snapshotPath == "" {
+			return resp.WriteError(w, "ERR snapshot path is not configured")
+		}
+		if err := s.store.SaveFile(s.snapshotPath); err != nil {
+			s.log.Error("failed to save snapshot", "path", s.snapshotPath, "err", err)
+			return resp.WriteError(w, "ERR failed to save snapshot")
+		}
+		s.log.Info("snapshot saved", "path", s.snapshotPath)
+		return resp.WriteSimpleString(w, "OK")
 	default:
 		return resp.WriteError(w, fmt.Sprintf("ERR unknown command '%s'", cmd))
 	}
