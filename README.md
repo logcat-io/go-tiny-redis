@@ -48,10 +48,3 @@ make race   # -race 필수 — 동시성 코드는 race 없이 통과해도 못 
 make vet
 make bench  # 서버 띄운 뒤: redis-benchmark -t set,get -n 100000 -c 50
 ```
-
-## 문서
-
-- [docs/deep-dive.md](docs/deep-dive.md) — 커널 소켓·epoll/kqueue·netpoller·GMP·chan/mutex 인터널
-- [docs/context-channel-shutdown.md](docs/context-channel-shutdown.md) — ctx/chan/select와 graceful shutdown 이해
-- [docs/ch5-bench.md](docs/ch5-bench.md) — redis-benchmark + pprof 실측 기록
-- [docs/load-test.md](docs/load-test.md) — 연결 유지 부하 측정
