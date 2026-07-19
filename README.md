@@ -3,6 +3,8 @@
 Go로 만든 학습용 미니 Redis. TCP 위에서 RESP2 프로토콜을 직접 파싱하고,
 TTL·스냅샷·graceful shutdown까지 구현했다. 실제 `redis-cli`, `redis-benchmark`로 접속/측정 가능.
 
+블로그 시리즈: [Go로 만드는 tinyredis](https://logcat-io.github.io/posts/go-tcp-echo-server-floor/)
+
 ## 실행
 
 ```sh
